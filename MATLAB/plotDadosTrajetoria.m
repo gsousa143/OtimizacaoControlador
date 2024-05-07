@@ -58,6 +58,7 @@ hold on;
 plot(dados(:,1), dados(:, 2), "LineWidth", 2);
 hold off;
 axis equal;
+title("Trajectory");
 xlabel('X Position [$m$]', "Interpreter", "latex");
 ylabel('Y Position [$m$]', "Interpreter", "latex");
 axis padded;
@@ -68,5 +69,6 @@ if print
     fprintf("\n f(x) = %2.5f, w1*er = %2.5f, w2*etraj = %2.5f, w3*eu = %2.5f, w4*ev = %2.5f, tempo = %3.3f \n", ...
         fCusto, w(1)*mean(er), w(2)*mean(etraj), w(3)*mean(eu,"all"), w(4)*mean(0.15-ev), tempo(end));
 end
-
+%salva em tela cheia
+set(gcf, 'Position', get(0, 'Screensize'));
 end
