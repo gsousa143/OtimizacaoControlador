@@ -1,33 +1,39 @@
 function fCusto = otmFLC(x,fis,Xinicial,T,tempoInicial,tempoMax,C,matrizSetpoints,isp,On)
 dados = [];
-fis = attFLC(fis,x);
+
+% bloco para verificar se ocorre algum erro no processo de otimização, tanto
+%na integração numerica quando no controlador
 try
-dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,C,matrizSetpoints,isp);
-catch
-end
-
-
-if (size(dados,1) == 0)
-    fCusto = Inf;
-else
+    fis = attFLC(fis,x);
+    dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,C,matrizSetpoints,isp);
     
+    fCusto = calculaErros(dados); %calcula o funcional custo
+
     if On
-        fCusto = calculaErros(dados);
+        % if norm(dados(1,1:2)-dados(end,1:2))<1e-4
+        %     fCusto = fCusto + 1e3;
+        % end
     else
-        [fCusto,er,etraj,eu,ev,~,w] = calculaErros(dados);
+        clf;
+        fprintf("\n x = ");
+        fprintf("%2.5f, ", x);
+        plotDadosTrajetoria(dados)
+        %verifica se a trajetoria ultrapassou o tempo maximo proposto para
+        %a otimização offline
         if dados(end,end)>=tempoMax
+            %aplica penalidade
             fCusto = fCusto + 1000;
         end
-        plotDDMR(dados,T,fis);
-        fprintf('\nf(x) = %9.5g;' ,fCusto);
-        fprintf('\tx = ');
-        fprintf('%9.5g, ', x);
-        fprintf('\nw1*Er = %9.5g, \t w2*Etraj = %9.5g, \t w3*Eu = %9.5g, \t w4*Ev = %9.5g, \t tempo = %9.5g\n' ...
-            ,w(1)*sqrt(mean(er.^2)),w(2)*sqrt(mean(etraj.^2)),w(3)*mean(eu),w(4)*sqrt((mean(0.15-ev).^2)),dados(end,end));
     end
+catch
+    fCusto = 1e6;
+    fprintf("\n f(x) = %2.5f", fCusto);
 end
 
 
 
+
 end
+
+
 
