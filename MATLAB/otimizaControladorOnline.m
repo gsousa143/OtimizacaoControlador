@@ -28,7 +28,7 @@ limitesMax = ([.2,.2,.2,.3,.5])*pi;
 limitesMin = ([0.0001, 0.0001, 0.0001, 0, .2])*pi;
 limites = [limitesMax;limitesMin]
 
-var = (limitesMax-limitesMin)/20;
+var = (limitesMax-limitesMin)/100;
 
 
 
@@ -93,7 +93,7 @@ for teste = 1
                 limites(1,:) = min(xopt+var,limitesMax);
                 limites(2,:) = max(xopt-var,limitesMin);
                  
-                if max(abs(mean(solucaoInicial)./xopt-1)) < 1e-5
+                if max(abs(mean(solucaoInicial)./xopt-1)) < 1e-3
                     solucaoInicial = xopt;
                 end
 

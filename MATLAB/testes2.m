@@ -1,5 +1,5 @@
 clc, clear, close all;
-controladores = ["fbmg", "fbm", "fbmo"]
+controladores = ["fbg", "fbm", "fbmo"]
 trajetorias = ["zzx", "dia", "inf", "spr"]
 for trajetoria = trajetorias
     % figure
@@ -14,7 +14,7 @@ for trajetoria = trajetorias
     end
         setpoints= readmatrix('../SETPOINTS/'+trajetoria+'.csv');
         hold on;
-        plot(setpoints(:,1),setpoints(:,2), "x--", LineWidth=0.25)
+        plot(setpoints(:,1),setpoints(:,2), "x--", LineWidth=2)
         hold off;
         legend([upper(controladores),"Setpoints"],Location="best",Interpreter="latex");
         print(pathDadosImagem,"-dpng")

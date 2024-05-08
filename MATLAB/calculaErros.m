@@ -11,7 +11,7 @@ Kp = 2.5; % Constante do PI, para caluclar a tensão dos motores CC
 
 
 %pesos para o calculo do funcional custo
-w = [3.41698014628655,109.322560099021,1.44479679533454,19.8789707737828];
+w = [3.703077044836,56.3073075221076,1.43165591452741,14.03112301983];
 
 
 n = size(dados,1);
@@ -33,7 +33,7 @@ er = sqrt((dados(:,10)-dados(:,1)).^2 + (dados(:,11)-dados(:,2)).^2);
 
 %esforco de controle
 % absoluto da tensão de entrada dos motores CC
-eu = abs(Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))');
+eu = Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))';
 % outras formas que ja utilizei foi o absoluto da diferença entre o
 % setpoint de velocidade e a velocidade atual
 % eu = abs([dados(:,8)-dados(:,4), dados(:,9)-dados(:,5)]);
@@ -46,7 +46,7 @@ eu = abs(Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))');
 
 
 %velocidade linear
-ev = abs(dados(:,4)+dados(:,5))*R/2;
+ev = (dados(:,4)+dados(:,5))*R/2;
 
 %erro de trajetoria
 
@@ -84,11 +84,11 @@ etraj(isnan(etraj)) = 0;
 %mean(eu) media dos modulos das tensão de entradas dos motores CC
 %mean(ev) media do erro entre a velocidade linear e maxima velocidade
 %linear possivel (de acordo com o controlador de trajetoria fuzzy)
-fCusto = 1*w(1)*mean(er) + w(2)*mean(etraj) + w(3)*mean(eu,"all")  + 1*w(4)*mean(0.15-ev);
+fCusto = 1*w(1)*mean(er) + w(2)*mean(etraj) + w(3)*mean(abs(eu),"all")  + 1*w(4)*mean(0.15-abs(ev));
 
 %como é calculado o vetor de pesos
 %vetor de pesos é utilizando para normalizar os valores a partir dos testes
 %realizados pela trajetoria executada pelo controlador FBM
-% writematrix([1/(mean(er)), 1/(mean(etraj)), 1/(mean(eu,"all")), 1/((mean(0.15-ev)))],"w.csv");
+% writematrix([1/mean(er), 1/mean(etraj), 1/mean(abs(eu),"all"), 1/mean(0.15-abs(ev))],"w.csv");
 end
 

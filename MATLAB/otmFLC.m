@@ -17,7 +17,7 @@ try
         clf;
         fprintf("\n x = ");
         fprintf("%2.5f, ", x);
-        plotDadosTrajetoria(dados)
+        plotDadosTrajetoria(dados,true);
         %verifica se a trajetoria ultrapassou o tempo maximo proposto para
         %a otimização offline
         if dados(end,end)>=tempoMax
