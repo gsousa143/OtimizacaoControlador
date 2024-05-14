@@ -2,7 +2,7 @@ clear, clc;
 close all;
 
 
-for controlador  = ["fbg"]
+for controlador  = ["fbg","fbgo"]
 fis = readfis('../CONTROLADORES/'+controlador+'.fis');
 
 

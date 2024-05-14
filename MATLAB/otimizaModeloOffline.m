@@ -11,7 +11,8 @@ load("../DADOS/MODELO/vR.mat");
 
 saidas = [saix(:,2),saiy(:,2)];
 
-U = [ud(:,2),ue(:,2)]/0.034;
+
+U = [ud(:,2),ue(:,2)]/0.034; %tranforma em velocidade angular
 
 tempos = saix(:,1);
 
@@ -20,19 +21,14 @@ X0 = zeros(7,1);
 
 solucaoInicial = C(1:12); %dos valores estimados seleciono os quais serão variaveis de decisão
 
-limites(1,:) = solucaoInicial*1.5;
-limites(2,:) = solucaoInicial*0.5;
-
-parametros.itMax = 60;
-parametros.tempoMax = Inf;
-parametros.NP = 40;
-parametros.info = 1;
-parametros.cP = 1.49; %PSO
-parametros.cS = 1.49; %PSO
-parametros.path = "custosModelo.csv";
+limites(1,:) = [C(1:2)*1.1, C(3:12)*10];
+limites(2,:) = [C(1:2)*0.9, C(3:12)*0.1];
 
 
-[fopt, xopt,~] = PSO(@(x) OtimizaModelo(x,saidas,U,tempos,X0,C), limites, solucaoInicial, parametros);
+
+
+[fopt, xopt] = de(@(x) otmModelo(x,saidas,U,tempos,X0,C,false), ...
+    limites, solucaoInicial, 50, 100, Inf, true);
 
 C = attConstantes(C,xopt,1:12);
-writematrix(C,"../CONSTANTES/constantesOpt.csv");
+writematrix(C,"../CONSTANTES/constantesOpt2.csv");

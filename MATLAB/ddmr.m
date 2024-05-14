@@ -58,6 +58,8 @@ tempo = tempoInicial;
 X = Xinicial;
 isp = ispInicial;
 setpoint = Setpoints(isp,:);
+
+%gera um warning com string vazia (gambiara para captar warnings)
 warning("");
 
 
@@ -90,15 +92,10 @@ while(1)
         %Atualização do estado
             [tempo,X] = integracaoNumericaMex(X,u,tempo,T,constantes);
         
-        if lastwarn~=""
+        if lastwarn~="" % verifica se o ultimo warning foi o warning vazio gerado no inicio do codigo(gambiara para captar warnings)
             print(lastwarn);
             error("erro na execução da trajetoria");
         end
-
-
-        %plot da trajetoria em "tempo real"
-        % plotDDMR(dados);
 end
-    
 end
 

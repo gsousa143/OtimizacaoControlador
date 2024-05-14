@@ -43,7 +43,7 @@ set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
 
 subplot(2, 4, 6);
 hold on;
-plot(tempo, ev, "LineWidth", 2);
+plot(tempo, abs(ev), "LineWidth", 2);
 hold off;
 
 xlabel('Time [$s$]', "Interpreter", "latex");

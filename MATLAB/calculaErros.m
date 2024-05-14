@@ -11,7 +11,7 @@ Kp = 2.5; % Constante do PI, para caluclar a tensão dos motores CC
 
 
 %pesos para o calculo do funcional custo
-w = [3.703077044836,56.3073075221076,1.43165591452741,14.03112301983];
+w = [3.84325517332611,31.981474668575,1.43080872551847,16.9687608119701];
 
 
 n = size(dados,1);
@@ -87,8 +87,8 @@ etraj(isnan(etraj)) = 0;
 fCusto = 1*w(1)*mean(er) + w(2)*mean(etraj) + w(3)*mean(abs(eu),"all")  + 1*w(4)*mean(0.15-abs(ev));
 
 %como é calculado o vetor de pesos
-%vetor de pesos é utilizando para normalizar os valores a partir dos testes
+% vetor de pesos é utilizando para normalizar os valores a partir dos testes
 %realizados pela trajetoria executada pelo controlador FBM
-% writematrix([1/mean(er), 1/mean(etraj), 1/mean(abs(eu),"all"), 1/mean(0.15-abs(ev))],"w.csv");
+writematrix([1/mean(er), 1/mean(etraj), 1/mean(abs(eu),"all"), 1/mean(0.15-abs(ev))],"w.csv");
 end
 
