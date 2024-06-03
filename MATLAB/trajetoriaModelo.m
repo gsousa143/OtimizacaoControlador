@@ -1,16 +1,16 @@
-function dados = trajetoriaModelo(C,U,tempos,X0)
+function dados = trajetoriaModelo(constantes,U,tempos,X0)
 %TRAJETORIAMODELO Summary of this function goes here
 %   Detailed explanation goes here
 X = X0;
 i=2;
-T = tempos(2)-tempos(1);
+periodo = tempos(2)-tempos(1);
 dados = zeros(size(tempos,1),7);
 warning("");
 dados(i,:) = X;
 
 while(i<size(tempos,1)+1)
     u = U(i,:)';
-    [~,X] = integracaoNumericaMex(X,u,tempos(i),T,C);
+    [~,X] = integracaoNumerica_mex(X,u,tempos(i),periodo,constantes);
     dados(i,:) = X;
     i = i+1;
 

@@ -11,7 +11,7 @@ Kp = 2.5; % Constante do PI, para caluclar a tensão dos motores CC
 
 
 %pesos para o calculo do funcional custo
-w = [3.84325517332611,31.981474668575,1.43080872551847,16.9687608119701];
+w = [3.65318188651116,33.9456080675297,0.342172901410243,14.20344230488];
 
 
 n = size(dados,1);
@@ -33,15 +33,8 @@ er = sqrt((dados(:,10)-dados(:,1)).^2 + (dados(:,11)-dados(:,2)).^2);
 
 %esforco de controle
 % absoluto da tensão de entrada dos motores CC
-eu = Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))';
-% outras formas que ja utilizei foi o absoluto da diferença entre o
-% setpoint de velocidade e a velocidade atual
-% eu = abs([dados(:,8)-dados(:,4), dados(:,9)-dados(:,5)]);
-% e o absoluto do setpoint de velocidade
-% eu = abs(dados(:,8:9));
-% Essas opções fazem sentido porque não é possivel coletar a tensão dos
-% motores do QBot, então não da pra combparar os resultados entre o
-% simulado e real
+eu = min(max(Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))',-12),12);
+
 
 
 
@@ -84,11 +77,11 @@ etraj(isnan(etraj)) = 0;
 %mean(eu) media dos modulos das tensão de entradas dos motores CC
 %mean(ev) media do erro entre a velocidade linear e maxima velocidade
 %linear possivel (de acordo com o controlador de trajetoria fuzzy)
-fCusto = 1*w(1)*mean(er) + w(2)*mean(etraj) + w(3)*mean(abs(eu),"all")  + 1*w(4)*mean(0.15-abs(ev));
+fCusto = 1*w(1)*mean(er) + 2*w(2)*mean(etraj) + w(3)*mean(abs(eu),"all")  + 2*w(4)*mean(0.15-abs(ev));
 
 %como é calculado o vetor de pesos
 % vetor de pesos é utilizando para normalizar os valores a partir dos testes
-%realizados pela trajetoria executada pelo controlador FBM
-writematrix([1/mean(er), 1/mean(etraj), 1/mean(abs(eu),"all"), 1/mean(0.15-abs(ev))],"w.csv");
+%realizados pela trajetoria executada pelo controlador FBG
+% writematrix([1/mean(er), 1/mean(etraj), 1/mean(abs(eu),"all"), 1/mean(0.15-abs(ev))],"w.csv");
 end
 

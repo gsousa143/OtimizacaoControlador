@@ -10,7 +10,8 @@ if isa(dados, "string")
 end
 
 [fCusto, er, etraj, eu, ev, tempo, w] = calculaErros(dados);
-
+eu = abs(eu);
+ev = abs(ev);
 tempo = tempo - tempo(1, end);
 
 subplot(2, 4, 1);
@@ -33,7 +34,10 @@ set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
 
 subplot(2, 4, 5);
 hold on;
-plot(tempo, sum(abs(eu),1),"LineWidth", 2);
+h1 = plot(tempo, eu(1,:), 'LineStyle', ':', "LineWidth", 2);
+cor = get(h1, 'Color');
+plot(tempo, eu(2,:), 'Color', cor, 'LineStyle', '--', "LineWidth", 2);
+
 hold off;
 
 xlabel('Time [$s$]', "Interpreter", "latex");
@@ -43,7 +47,7 @@ set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
 
 subplot(2, 4, 6);
 hold on;
-plot(tempo, abs(ev), "LineWidth", 2);
+plot(tempo, ev, "LineWidth", 2);
 hold off;
 
 xlabel('Time [$s$]', "Interpreter", "latex");
@@ -65,7 +69,7 @@ set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
 
 drawnow;
 if print
-    fprintf("\n f(x) = %2.5f, w1*er = %2.5f, w2*etraj = %2.5f, w3*eu = %2.5f, w4*ev = %2.5f, tempo = %3.3f \n", ...
+    fprintf("\n f(x) = %2.5f, w1*er = %2.5f, w2*etraj = %2.5f, w3*eu = %2.5f, w4*ev = %2.5f, tempo = %3.0f \n", ...
         fCusto, w(1)*mean(er), w(2)*mean(etraj), w(3)*mean(abs(eu),"all"), w(4)*mean(0.15-abs(ev)), tempo(end));
 end
 %salva em tela cheia

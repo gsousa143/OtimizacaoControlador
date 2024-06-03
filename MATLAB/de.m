@@ -21,7 +21,7 @@ for n = 1:NP
 end
 tempoIt = toc(tempoInicial);
 
-Fp = 0.3*ones(NP,1);
+Fp = 0.4*ones(NP,1);
 cr = 0.9*ones(NP,1);
 
 Fl = 0.9;
@@ -46,14 +46,13 @@ while(1)
         infoOtm(it,Fbest,gbest);
     end
 
-    % [Fp, cr] = attConstantesjDE(Fp,cr,Fl,Fu,tal1,tal2,NP)
+    % [Fp, cr] = attConstantesjDE(Fp,cr,Fl,Fu,tal1,tal2,NP);
     v = multacaoRand1(x,NP,Fp);
-    % v = multacaoBest1(x,gbest,NP,Fp);
     % v = multacaoCurToBest1(x,gbest,NP,Fp);
-    v = min(xMax, v);
-    v = max(xMin, v);
+    % v = multacaoCurToBest1(x,gbest,NP,Fp);
 
-    % u = cruzamentoBin(x,v,NP,D,cr);
+    v = max(xMin, min(xMax, v));
+
     u = cruzamento(x,v,NP,D,cr);
 
 
@@ -92,12 +91,12 @@ function v = multacaoRand1(x,NP,Fp)
 v = x(randperm(NP),:) + Fp.*(x(randperm(NP),:) - x(randperm(NP),:) );
 end
 
-% function v = multacaoCurToBest1(x,gbest,NP,Fp)
-% v = x + Fp.*( gbest-x + x(randperm(NP),:) - x(randperm(NP),:) );
-% end
+function v = multacaoCurToBest1(x,gbest,NP,Fp)
+v = x + Fp.*( gbest-x + x(randperm(NP),:) - x(randperm(NP),:) );
+end
 
 function u = cruzamento(x,v,NP,D,cr)
-i = or((rand(NP,D)<=cr), (randi(NP,NP,D)== randi(NP,NP,1)));
+i = rand(NP,D)<=cr;
 
 u = x;
 u(i) = v(i);
@@ -117,12 +116,16 @@ function [x,F] = selecao(x,F,u,costf,NP)
         end
     end
 end
-function [Fp, cr] = attConstantesjDE(Fp,cr,Fl,Fu,tal1,tal2,NP)
-Fpnew = rand(NP,1)*Fu+Fl;
-indiceFp = rand(NP,1)<tal1;
-Fp(indiceFp) = Fpnew(indiceFp);
-crnew = rand(NP,1);
-indicecr = rand(NP,1)<tal2;
-cr(indicecr) = crnew(indicecr);
-end
+
+% function [Fp, cr] = attConstantesjDE(Fp,cr,Fl,Fu,tal1,tal2,NP)
+% Fpnew = rand(NP,1)*Fu+Fl;
+% crnew = rand(NP,1);
+% 
+% indiceFp = rand(NP,1)<tal1;
+% Fp(indiceFp) = Fpnew(indiceFp);
+% 
+% indicecr = rand(NP,1)<tal2;
+% cr(indicecr) = crnew(indicecr);
+% 
+% end
 

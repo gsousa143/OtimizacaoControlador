@@ -70,7 +70,7 @@ while(1)
         %incrementa a matriz de dados
         dados = [dados; [X', u', setpoint, tempo] ];
     
-    
+        % plotTrajetoria(dados);
         %atualização do setpoint 
         distancia = norm(setpoint-X(1:2)');
         if  distancia < 0.035
@@ -90,7 +90,7 @@ while(1)
         
 
         %Atualização do estado
-            [tempo,X] = integracaoNumericaMex(X,u,tempo,T,constantes);
+            [tempo,X] = integracaoNumerica_mex(X,u,tempo,T,constantes);
         
         if lastwarn~="" % verifica se o ultimo warning foi o warning vazio gerado no inicio do codigo(gambiara para captar warnings)
             print(lastwarn);
