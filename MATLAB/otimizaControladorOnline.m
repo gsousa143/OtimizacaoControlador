@@ -4,36 +4,37 @@ clc, clear;
 
 T = 1e-2;
 
+voltaInicial = 1
+voltaFinal = 50
+
+%parametros para a otimizacao
+Totm = 10  %perido de tempo no qual a otimização em tempo real ocorerá
+itMax = Inf; %maximo de iteracoes
+NP = 10 %numero de particulas
+
+
+
+load("..\CONSTANTES\const_otimo.mat"); % constantes do modelo unificado
+[A_taum,V_TRACO,B_taum,M_TRACOi, R, L, F_s, F_k, alpha_s,alpha_k,k_i,k_p] = calculaMatrizesModelo(constantes);
+
 for controlador = ["fbgo"]
-    for metodo = ["pso"]
+    for metodo = ["de"]
         for trajetoria = ["spr"]
-
-
-
-            %parametros para a otimizacao
-            Totm = 6  %perido de tempo no qual a otimização em tempo real ocorerá
-            itMax = Inf; %maximo de iteracoes
-            NP = 8 %numero de particulas
-
-
-            setpoins = readmatrix("..\SETPOINTS\"+upper(trajetoria)+".csv"); %referencias constantes
-            load("..\CONSTANTES\const_otimo.mat"); % constantes do modelo unificado
-
-
-
+            load('../SETPOINTS/'+trajetoria+'.mat')
+            
             %definindo os limites para as variaveis de decisão
-            limitesMax = ([.3,.3,.3,.5,.5])*pi;
-            limitesMin = ([0.001, 0.001, 0.001, 0, 0])*pi;
+            limitesMax = ([0.3,0.3,0.3,0.5,0.5])*pi;
+            limitesMin = ([0.0001, 0.0001, 0.0001, 0, 0])*pi;
             limites = [limitesMax;limitesMin];
 
-            var = (limitesMax-limitesMin)*0.01
+            var = (limitesMax-limitesMin)*0.05
 
 
 
             path = "..\DADOS\CONTROLADOR\"+upper(trajetoria)+"\"+upper(controlador)+"_"+upper(metodo)+"\"
             mkdir(path);
 
-            for teste = 1:5
+            for teste = 1
                 %inicia variaveis
                 tempoInicial = 0; %tempo inicial = 0s
                 fis = readfis("..\CONTROLADORES\"+upper(controlador)+".fis"); %Importa controlador
@@ -49,8 +50,6 @@ for controlador = ["fbgo"]
 
                 v = [];
 
-                voltaInicial = 1
-                voltaFinal = 50
 
                 % condição continuar o codigo apos pausa
                 if voltaInicial > 1
@@ -71,12 +70,9 @@ for controlador = ["fbgo"]
                     iotm = isp; %setpoint da otimizacao
 
 
-                    setpoint = setpoins(isp,:);
+                    setpoint = setpoints(isp,:);
 
                     while(1)
-                        %estudos de caso
-                        %constantes = estudosDeCaso(C,isp,"massa");
-
                         %controlador fuzzy
                         u = flc(X',setpoint,fis);
 
@@ -87,11 +83,11 @@ for controlador = ["fbgo"]
                         distancia = norm(setpoint-X(1:2)');
                         if  distancia < 0.035
                             isp = isp+1;
-                            if (isp > size(setpoins, 1))
+                            if (isp > size(setpoints, 1))
                                 save(path+"save",'fis','xopt','solucaoInicial','limites')
                                 break;
                             end
-                            setpoint = setpoins(isp,:);
+                            setpoint = setpoints(isp,:);
                         end
 
 
@@ -101,15 +97,15 @@ for controlador = ["fbgo"]
                             tic
                             limites = [min(xopt+var,limitesMax);max(xopt-var,limitesMin)];
 
-                            
+
                             if metodo == "ga"
-                                [fopt, xopt,iter,solucaoInicial] = ga(@(x) otmFLC(x,fis,XInicial,T,tempoInicial,Totm,constantes,setpoins,iotm,true), ... %OTIMIZAÇÃO
+                                [fopt, xopt,iter,solucaoInicial] = ga(@(x) otmFLC(x,fis,XInicial,T,tempoInicial,Totm,constantes,setpoints,iotm,true), ... %OTIMIZAÇÃO
                                     limites, solucaoInicial,NP,itMax,Totm,false);
                             elseif metodo == "pso"
-                                [fopt, xopt,iter,solucaoInicial] = pso(@(x) otmFLC(x,fis,XInicial,T,tempoInicial,Totm,constantes,setpoins,iotm,true), ... %OTIMIZAÇÃO
+                                [fopt, xopt,iter,solucaoInicial] = pso(@(x) otmFLC(x,fis,XInicial,T,tempoInicial,Totm,constantes,setpoints,iotm,true), ... %OTIMIZAÇÃO
                                     limites, solucaoInicial,v,NP,itMax,Totm,false);
                             elseif metodo == "de"
-                                [fopt, xopt,iter,solucaoInicial] = de(@(x) otmFLC(x,fis,XInicial,T,tempoInicial,Totm,constantes,setpoins,iotm,true), ... %OTIMIZAÇÃO
+                                [fopt, xopt,iter,solucaoInicial] = de(@(x) otmFLC(x,fis,XInicial,T,tempoInicial,Totm,constantes,setpoints,iotm,true), ... %OTIMIZAÇÃO
                                     limites, solucaoInicial,NP,itMax,Totm,false);
                             end
                             writematrix([iter,toc,fopt,xopt,volta],path+"otm"+string(teste)+".csv",'WriteMode','append');
@@ -124,8 +120,9 @@ for controlador = ["fbgo"]
                             %reinicilização do enxame/populacao realimentando somente a
                             %solucao otima do ciclo anterior
 
-                            if abs(xopt-solucaoInicial) < var*1e-1
-                                solucaoInicial = xopt
+                            if abs(xopt-solucaoInicial) < var*1e-3
+                                solucaoInicial = xopt;
+                                xopt
                                 v = [];
                             end
 
@@ -133,7 +130,7 @@ for controlador = ["fbgo"]
 
 
                         %Atualização do estado
-                        [tempo,X] = integracaoNumerica_mex(X,u,tempo,T,constantes);
+                        [tempo,X] = integracaoNumerica_mex(X,u,tempo,T,A_taum,V_TRACO,B_taum,M_TRACOi, R, L, F_s, F_k, alpha_s,alpha_k,k_i,k_p);
 
                     end
 
@@ -146,7 +143,7 @@ for controlador = ["fbgo"]
                     custos = [volta,fCusto];
                     writematrix(custos,path+"custos"+string(teste)+".csv",'WriteMode','append'); %salva os custos em um arquivo de texto
                     save(path+"dados"+string(teste)+"_"+string(volta),'dados','custos'); %salva os dados da volta em um arquivo
-                    
+
                 end
             end
         end

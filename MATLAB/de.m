@@ -21,13 +21,13 @@ for n = 1:NP
 end
 tempoIt = toc(tempoInicial);
 
-Fp = 0.4*ones(NP,1);
-cr = 0.9*ones(NP,1);
+Fp = 0.8*ones(NP,1);
+cr = 0.3*ones(NP,1);
 
-Fl = 0.9;
-Fu = 0.1;
-tal1 = 0.1;
-tal2 = 0.1;
+%Fl = 0.9;
+%Fu = 0.1;
+%tal1 = 0.1;
+%tal2 = 0.1;
 while(1)
     % determina Fbest e gbest
     [C, I] = min(F);
@@ -46,10 +46,9 @@ while(1)
         infoOtm(it,Fbest,gbest);
     end
 
-    % [Fp, cr] = attConstantesjDE(Fp,cr,Fl,Fu,tal1,tal2,NP);
     v = multacaoRand1(x,NP,Fp);
-    % v = multacaoCurToBest1(x,gbest,NP,Fp);
-    % v = multacaoCurToBest1(x,gbest,NP,Fp);
+
+
 
     v = max(xMin, min(xMax, v));
 
@@ -78,6 +77,7 @@ function x = inicializaPopulacao(xMin,xMax,x0,NP,D)
 for d = 1:D
     x(1:NP,d) = xMin(d) + rand(NP,1)*( xMax(d) - xMin(d) );
 end
+
 if ~isempty(x0)
     x(1:size(x0,1),:) = max(min(x0,xMax),xMin);
 end
@@ -91,9 +91,9 @@ function v = multacaoRand1(x,NP,Fp)
 v = x(randperm(NP),:) + Fp.*(x(randperm(NP),:) - x(randperm(NP),:) );
 end
 
-function v = multacaoCurToBest1(x,gbest,NP,Fp)
-v = x + Fp.*( gbest-x + x(randperm(NP),:) - x(randperm(NP),:) );
-end
+%function v = multacaoCurToBest1(x,gbest,NP,Fp)
+%v = x + Fp.*( gbest-x + x(randperm(NP),:) - x(randperm(NP),:) );
+%end
 
 function u = cruzamento(x,v,NP,D,cr)
 i = rand(NP,D)<=cr;

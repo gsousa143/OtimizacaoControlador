@@ -1,4 +1,4 @@
-function dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,Constantes,Setpoints,ispInicial)
+function dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,setpoints,ispInicial,A_taum,V_TRACO,B_taum,M_TRACOi, R, L, F_s, F_k, alpha_s,alpha_k,k_i,k_p)
 %SIMULA TRAJETORIA EXECUTADA PELO DDMR
 % 
 % 
@@ -22,7 +22,7 @@ function dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,Constantes,Setpoints,
 %   em espaço de estados. Mais informações sobre o a representação de cada
 %   constante consultar "help ModeloUnificado"
 %
-%Setpoints = Matriz com os pontos de referencia (setpoints) [nx2 float]
+%setpoints = Matriz com os pontos de referencia (setpoints) [nx2 float]
 %   Onde cada linha representa um ponto no espaco no formato x_sp, y_sp
 %   n o numero de setpoints
 % 
@@ -53,11 +53,10 @@ function dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,Constantes,Setpoints,
 
 %inicização de valores
 dados = [];
-constantes = Constantes;
 tempo = tempoInicial;
 X = Xinicial;
 isp = ispInicial;
-setpoint = Setpoints(isp,:);
+setpoint = setpoints(isp,:);
 
 %gera um warning com string vazia (gambiara para captar warnings)
 warning("");
@@ -70,16 +69,15 @@ while(1)
         %incrementa a matriz de dados
         dados = [dados; [X', u', setpoint, tempo] ];
     
-        % plotTrajetoria(dados);
         %atualização do setpoint 
         distancia = norm(setpoint-X(1:2)');
         if  distancia < 0.035
             isp = isp+1;
             % verifica se o robô chegou na ultima referencia
-            if isp>size(Setpoints,1)
+            if isp>size(setpoints,1)
                 break
             end
-            setpoint = Setpoints(isp,:);
+            setpoint = setpoints(isp,:);
         end
         
         %verificação das condições de parada
@@ -90,7 +88,7 @@ while(1)
         
 
         %Atualização do estado
-            [tempo,X] = integracaoNumerica_mex(X,u,tempo,T,constantes);
+            [tempo,X] = integracaoNumerica_mex(X,u,tempo,T,A_taum,V_TRACO,B_taum,M_TRACOi, R, L, F_s, F_k, alpha_s,alpha_k,k_i,k_p);
         
         if lastwarn~="" % verifica se o ultimo warning foi o warning vazio gerado no inicio do codigo(gambiara para captar warnings)
             print(lastwarn);

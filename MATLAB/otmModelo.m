@@ -1,6 +1,6 @@
 function fCusto = otmModelo(x,saidas,U,tempos,X0,constantes,on)
 
-constantes = attConstantes(constantes,x,1:12);
+constantes = attConstantes(constantes,x);
 
 try
     dados = trajetoriaModelo(constantes,U,tempos,X0);

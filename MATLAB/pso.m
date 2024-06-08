@@ -18,7 +18,7 @@ D = size(limites, 2);
 xMax = limites(1, :);
 xMin = limites(2, :);
 
-vMax = (xMax - xMin)/10;
+vMax = (xMax - xMin)/20;
 
 [x, v] = inicializaPopulacao(xMin, xMax, vMax, x0,v0, NP, D);
 

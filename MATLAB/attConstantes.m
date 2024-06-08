@@ -1,4 +1,4 @@
-function c = attConstantes(c,x,indice)
-c(indice) = x;
+function constantes = attConstantes(constantes,x)
+constantes(1:14) = x;
 end
 

@@ -6,14 +6,16 @@ load("../DADOS/MODELO/dadosQbot.mat");
 
 X0 = zeros(7,1);
 
-solucaoInicial = constantes(1:12); %dos valores estimados seleciono os quais serão variaveis de decisão
+solucaoInicial = constantes(1:14);
 
-limites(1,:) = [constantes(1:2)*1.5, constantes(3:12)*10];
-limites(2,:) = [constantes(1:2)*0.5, constantes(3:12)*0.1];
+limites(1,:) = [constantes(1:4)*1.3, 0.07, constantes(6:14)*10];
+limites(2,:) = [constantes(1:4)*0.7, 0, constantes(6:14)*0.1];
+
+limites
 
 
-[fopt, xopt] = pso(@(x) otmModelo(x,posicao,velocidade,tempo,X0,constantes,false), ...
-    limites, solucaoInicial,[], 60, 100, Inf, true);
+[fopt, xopt] = de(@(x) otmModelo(x,posicao,velocidade,tempo,X0,constantes,false), ...
+    limites, solucaoInicial, 60, 100, Inf, true);
 
-constantes = attConstantes(constantes,xopt,1:12);
+constantes = attConstantes(constantes,xopt);
 save("../CONSTANTES/const_otimo.mat","constantes");

@@ -1,18 +1,16 @@
-function fCusto = otmFLC(x,fis,Xinicial,T,tempoInicial,tempoMax,C,matrizSetpoints,isp,On)
+function fCusto = otmFLC(x,fis,Xinicial,T,tempoInicial,tempoMax,constantes,setpoints,isp,On)
 dados = [];
-
+[A_taum,V_TRACO,B_taum,M_TRACOi, R, L, F_s, F_k, alpha_s,alpha_k,k_i,k_p] = calculaMatrizesModelo(constantes);
 % bloco para verificar se ocorre algum erro no processo de otimização, tanto
 %na integração numerica quando no controlador
 try
     fis = attFLC(fis,x);
-    dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,C,matrizSetpoints,isp);
+    dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,setpoints,isp,A_taum,V_TRACO,B_taum,M_TRACOi, R, L, F_s, F_k, alpha_s,alpha_k,k_i,k_p);
     
     fCusto = calculaErros(dados); %calcula o funcional custo
 
     if On
-        % if norm(dados(1,1:2)-dados(end,1:2))<1e-4
-        %     fCusto = fCusto + 1e3;
-        % end
+
     else
         clf;
         fprintf("\n x = ");
