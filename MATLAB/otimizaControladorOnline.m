@@ -5,7 +5,7 @@ clc, clear;
 T = 1e-2;
 
 voltaInicial = 1
-voltaFinal = 50
+voltaFinal = 60
 
 %parametros para a otimizacao
 Totm = 10  %perido de tempo no qual a otimização em tempo real ocorerá
@@ -19,7 +19,7 @@ load("..\CONSTANTES\const_otimo.mat"); % constantes do modelo unificado
 
 for controlador = ["fbgo"]
     for metodo = ["de"]
-        for trajetoria = ["spr"]
+        for trajetoria = ["inf"]
             load('../SETPOINTS/'+trajetoria+'.mat')
             
             %definindo os limites para as variaveis de decisão
@@ -34,7 +34,7 @@ for controlador = ["fbgo"]
             path = "..\DADOS\CONTROLADOR\"+upper(trajetoria)+"\"+upper(controlador)+"_"+upper(metodo)+"\"
             mkdir(path);
 
-            for teste = 1
+            for teste = 1:5
                 %inicia variaveis
                 tempoInicial = 0; %tempo inicial = 0s
                 fis = readfis("..\CONTROLADORES\"+upper(controlador)+".fis"); %Importa controlador

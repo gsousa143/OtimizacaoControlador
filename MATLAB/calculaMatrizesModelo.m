@@ -26,7 +26,7 @@ g = 9.81; %Aceleracao da gravidade
 m = m_c + 2*m_w;
 I_c = m_c*L^2/2;
 I_w = m_w*R^2/2;
-I_t = I_c + 2*m_w*L^2 + 2*I_w;
+I_t = I_c + 2*m_w*L^2 + 2*I_w + m_c*d^2;
 
 F_s = f_s*m*g;
 F_k = f_k*m*g;
@@ -38,7 +38,6 @@ V_TRACO = R^2*d*m_c/(4*L^2)*[
 A_taum = (b - (K_ce*K_t)/R_a)/N*eye(2,2);
 
 B_taum = K_t/R_a*eye(2,2);
-
 
 M_TRACOi = -inv([
     I_w + R^2*(m*L^2 + I_t)/(4*L^2), R^2*(m*L^2 - I_t)/(4*L^2);
