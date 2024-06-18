@@ -3,17 +3,19 @@ clc
 
 constante = "otimo";
 controlador = "fbgo";
-trajetoria = "zzx";
+traj = "zzx";
 
 load("../CONSTANTES/const_"+constante+".mat")
-load("../SETPOINTS/"+trajetoria+".mat")
+load("../SETPOINTS/"+traj+".mat")
 fis = readfis("../CONTROLADORES/"+controlador+".fis");
 i_sp = 1;
 N_sp = size(setpoints,1);
 
-setpoints = reshape(setpoints,[],1);
 T = 0.01;
-
+t1 = 0:T:8;
+t2 = 8+T:T:14;
+x_sp = [0,0;T,0.5;10,0.5];
+y_sp = [0,0;T,0.5;10,-1];
 R = constantes(1); % Raio das rodas do robô (m)
 L = constantes(2); % Comprimento do semieixo das rodas do robô (m)
 m_c = constantes(3); % Massa da plataforma do robô
@@ -45,5 +47,5 @@ Mn2 = (R^2*(- m*L^2 + I_t));
 Md = (4*I_w^2*L^2 + 2*m*I_w*L^2*R^2 + 2*I_t*I_w*R^2 + I_t*m*R^4);
 
 
-sim('trajetoria')
+out = sim('trajetoria')
 
