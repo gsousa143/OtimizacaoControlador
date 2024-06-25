@@ -2,13 +2,10 @@ clear, clc;
 close all;
 hold on;
 
-tipo = "estimado";
+tipo = "otimo";
 load("../CONSTANTES/const_"+tipo+".mat")
 load("../DADOS/MODELO/dadosQbot.mat");
-robo = readmatrix("diagonal.csv");
-velocidade = robo(:,4:5);
-tempo = robo(:,6);
-posicao = robo(:,1:2);
+
 X0 = zeros(7,1);
 dados = trajetoriaModelo(constantes,velocidade,tempo,X0);
 plot(posicao(:,1),posicao(:,2),"DisplayName","Qbot","LineWidth",2)

@@ -1,0 +1,4 @@
+LIBRARY ..\..\..\..\ddmr_model_msf.mexw64
+EXPORTS
+    mexFunction
+    mexfilerequiredapiversion

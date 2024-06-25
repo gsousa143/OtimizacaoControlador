@@ -2,7 +2,7 @@ clear
 clc
 
 
-load("../CONSTANTES/const_estimado.mat")
+load("../CONSTANTES/const_otimo.mat")
 load("../DADOS/MODELO/dadosQbot.mat");
 
 
@@ -37,10 +37,12 @@ I_t = I_c + 2*m_w*L^2 + 2*I_w + m_c*d^2;
 m = m_c + 2*m_w;
 g = 9.81; %Aceleracao da gravidade
 
-Mn1 = (m*L^2*R^2 + 4*I_w*L^2 + I_t*R^2)/(4*I_w^2*L^2 + 2*m*I_w*L^2*R^2 + 2*I_t*I_w*R^2 + I_t*m*R^4);
-Mn2 = (R^2*(- m*L^2 + I_t));
-Md = (4*I_w^2*L^2 + 2*m*I_w*L^2*R^2 + 2*I_t*I_w*R^2 + I_t*m*R^4);
-
+M_TRACOi = -inv([
+    I_w + R^2*(m*L^2 + I_t)/(4*L^2), R^2*(m*L^2 - I_t)/(4*L^2);
+    R^2*(m*L^2 - I_t)/(4*L^2), I_w + R^2*(m*L^2 + I_t)/(4*L^2)]);
+M1 = M_TRACOi(1,1);
+M2 = M_TRACOi(1,2);
 out = sim('modelo');
+
 
 
