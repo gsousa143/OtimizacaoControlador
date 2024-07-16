@@ -21,8 +21,8 @@ for n = 1:NP
 end
 tempoIt = toc(tempoInicial);
 
-Fp = 0.8*ones(NP,1);
-cr = 0.3*ones(NP,1);
+Fp = 0.5*ones(NP,1);
+cr = 0.9*ones(NP,1);
 
 %Fl = 0.9;
 %Fu = 0.1;

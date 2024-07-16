@@ -1,10 +1,11 @@
-function [fCusto,er,etraj,eu,ev,tempo,w] = calculaErros(dados)
+function [fCusto,er,etraj,eu,ea,tempo,w] = calculaErros(dados)
 %calculaErros:
 % calcula o funcional custo de uma trajetoria
 
 
 %constantes
 R = 0.034; %Raio da roda, para calculo da Velocidade Linear
+L = 0.1175;
 Ki = 1; % Constante do PI, para calcular a tensão dos motores CC
 Kp = 2.5; % Constante do PI, para caluclar a tensão dos motores CC
 
@@ -24,6 +25,7 @@ etraj = zeros(n,1);
 
 %determinando vetor de tempos
 tempo = dados(:,12);
+T = tempo(2)-tempo(1);
 
 
 %erro real
@@ -39,7 +41,8 @@ eu = min(max(Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))',-0.65),0.65);
 
 
 %velocidade linear
-ev = (dados(:,4)+dados(:,5))*R/2;
+ea = zeros(n,1);
+ea(2:end) = abs( (diff( dados(:,4) + dados(:,5) ))*R/(2*T)) ;
 
 %erro de trajetoria
 
@@ -77,7 +80,7 @@ etraj(isnan(etraj)) = 0;
 %mean(eu) media dos modulos das tensão de entradas dos motores CC
 %mean(ev) media do erro entre a velocidade linear e maxima velocidade
 %linear possivel (de acordo com o controlador de trajetoria fuzzy)
-fCusto = w(1)*sqrt(mean(er.^2)) + w(2)*sqrt(mean(etraj.^2)) + w(3)*sqrt(mean(abs(eu).^2,"all"))  + 3*w(4)*sqrt(mean((0.15-abs(ev)).^2));
+fCusto = w(1)*sqrt(mean(er.^2)) + w(2)*sqrt(mean(etraj.^2)) + w(3)*sqrt(mean(abs(eu).^2,"all"))  + w(4)*sqrt(mean((ea).^2));
 
 %como é calculado o vetor de pesos
 % vetor de pesos é utilizando para normalizar os valores a partir dos testes

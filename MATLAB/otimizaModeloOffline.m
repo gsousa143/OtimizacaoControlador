@@ -1,6 +1,6 @@
 clc,clear,close all;
 hold on;
-
+warning("off")
 load("../CONSTANTES/const_estimado.mat");
 load("../DADOS/MODELO/dadosQbot.mat");
 
@@ -14,7 +14,7 @@ X0 = zeros(7,1);
 limites
 
 [fopt, xopt] = de(@(x) otmModelo(x,posicao,velocidade,tempo,X0,constantes,false), ...
-    limites, solucaoInicial, 70, 100, Inf, true);
+    limites, solucaoInicial, 70, 50, Inf, true);
 
 constantes = attConstantes(constantes,xopt);
 save("../CONSTANTES/const_otimo_joao.mat","constantes");
