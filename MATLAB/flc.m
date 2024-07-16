@@ -1,4 +1,4 @@
-function u = flc(X,referencia,fis)
+function u = flc(X,referencia,fis,R,L)
     % CONTROLADOR DE TRAJETORIA FUZZY
     %
     %
@@ -25,15 +25,14 @@ function u = flc(X,referencia,fis)
     
 
     % constantes
-    R = 0.034; %Raio da rodas em metros.
-    L =  0.175; %Distancia entre centro geometrico as rodas
+    
     
     %calculo dos erros em relação aos eixos x e y
     erro = referencia - X(1:2);
     %calculo da distancia euclidiana
     distancia = norm(erro);
     %calculo do erro angular 
-    % (necessario para manter o intervalo entre [-pi, pi]
+    % (necessario para manter o intervalo entre [-pi, pi])
     PHIr = (atan2( erro(2), erro(1) )-X(3))/2;
     erroAngular = 2*atan2( tan(PHIr) ,1 );
     % avalia o sistema de inferencia fuzzy

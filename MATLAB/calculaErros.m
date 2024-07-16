@@ -11,7 +11,7 @@ Kp = 2.5; % Constante do PI, para caluclar a tensão dos motores CC
 
 
 %pesos para o calculo do funcional custo
-w = [3.19183037861018,22.8165021896447,0.730542263457998,14.4172331530828];
+w = [2.40492798773439,20.3549622976186,0.675805189069824,15.0730121331585];
 
 
 n = size(dados,1);
@@ -33,7 +33,7 @@ er = sqrt((dados(:,10)-dados(:,1)).^2 + (dados(:,11)-dados(:,2)).^2);
 
 %esforco de controle
 % absoluto da tensão de entrada dos motores CC
-eu = min(max(Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))',-12),12);
+eu = min(max(Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))',-0.65),0.65);
 
 
 

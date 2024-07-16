@@ -3,11 +3,7 @@ clear
 close all
 
 
-plotCustosOnline(["","DE","GA","PSO"], "spr", "fbgo",5)
-figure
-plotCustosOnline(["","DE","GA","PSO"], "inf", "fbgo",5)
-% % plotControladores(["fbg","fbgo"])
-% plotTrajetorias(["fbg","fbgo"], "zzx","custo")
+plotControladores("fbg")
 
 
 function plotCustosOnline(metodos, trajetoria, controladores,maxTestes)

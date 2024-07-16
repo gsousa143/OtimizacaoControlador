@@ -1,8 +1,8 @@
 function plotTrajetoria(dados)
-n = 50;
-for i = 1:size(dados,1)/n
-    plotDDMR(dados(1:i*n,:))
-end
+% n = 50;
+% for i = 1:size(dados,1)/n
+%     plotDDMR(dados(1:i*n,:))
+% end
 plotDDMR(dados)
 end
 

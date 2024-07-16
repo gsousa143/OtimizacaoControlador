@@ -1,15 +1,15 @@
 clear, clc;
 close all;
 
-load("../CONSTANTES/const_otimo.mat")
+load("const_estimado.mat")
 
 [A_taum,V_TRACO,B_taum,M_TRACOi, R, L, F_s, F_k, alpha_s,alpha_k,k_i,k_p] = calculaMatrizesModelo(constantes);
 
-for controlador  = ["fbg","fbgo"]
+for controlador  = ["fbg"]
 fis = readfis('../CONTROLADORES/'+controlador+'.fis');
 
 
-for trajetoria = ["zzx"]
+for trajetoria = ["dia"]
 
 
 path = "../DADOS/CONTROLADOR/"+upper(trajetoria)+"/"+upper(controlador)+"/";
