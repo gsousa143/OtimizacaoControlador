@@ -1,5 +1,5 @@
 [System]
-Name='fbg'
+Name='FBg'
 Type='mamdani'
 Version=2.0
 NumInputs=2
@@ -29,20 +29,20 @@ MF11='EP':'gaussmf',[0.15707963267949 3.14159265358979]
 
 [Input2]
 Name='L'
-Range=[0 10]
+Range=[0 5]
 NumMFs=2
-MF1='MP':'linzmf',[0.01755 0.035]
-MF2='G':'linsmf',[0.01755 0.035]
+MF1='MP':'linzmf',[0.01 0.02]
+MF2='G':'linsmf',[0.01 0.02]
 
 [Output1]
 Name='VF'
 Range=[-0.15 0.15]
 NumMFs=5
-MF1='R':'zmf',[-0.15 -0.075]
-MF2='MR':'pimf',[-0.15 -0.075 -0.075 0]
-MF3='P':'pimf',[-0.075 0 0 0.075]
-MF4='MF':'pimf',[0 0.075 0.075 0.15]
-MF5='F':'smf',[0.075 0.15]
+MF1='R':'pimf',[-0.15 -0.15 -0.1 -0.05]
+MF2='MR':'pimf',[-0.1 -0.05 -0.05 0]
+MF3='P':'pimf',[-0.05 0 0 0.05]
+MF4='MF':'pimf',[0 0.05 0.05 0.1]
+MF5='F':'pimf',[0.05 0.1 0.15 0.15]
 
 [Output2]
 Name='WF'

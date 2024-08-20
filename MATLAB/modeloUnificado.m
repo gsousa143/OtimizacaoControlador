@@ -9,18 +9,19 @@ tau_F = [
     F_s*tanh(alpha_s*X(4)) - F_k*tanh(alpha_k*X(4));
     F_s*tanh(alpha_s*X(5)) - F_k*tanh(alpha_k*X(5))];
 
-
 eta = [
     X(4);
     X(5)];
-
 
 
 epi = [
     X(6);
     X(7)];
 
-Y_pi = min(0.65, max( k_i*epi + k_p*(u-eta), -0.65) );
+Y_pi = min(12, max( k_i*epi + k_p*(u-eta), -12) );
+% Y_pi = min(0.65, max( k_i*epi + k_p*(u-eta), -0.65) );
+% Y_pi = k_i*epi + k_p*(u-eta);
+
 
 theta_ponto = R*(eta(1)-eta(2))/(2*L);
 

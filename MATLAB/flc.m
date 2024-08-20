@@ -38,7 +38,7 @@ function u = flc(X,referencia,fis,R,L)
     % avalia o sistema de inferencia fuzzy
     velocidades = evalfis(fis,[erroAngular,distancia]);
     % transforma as velocidades linear e angular em velocidades das rodas
-    u = (1/R)*[
+    u = 1/R*[
         velocidades(1)+velocidades(2)*L;
         velocidades(1)-velocidades(2)*L];
     

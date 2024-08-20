@@ -12,8 +12,7 @@ Kp = 2.5; % Constante do PI, para caluclar a tensão dos motores CC
 
 
 %pesos para o calculo do funcional custo
-w = [2.40492798773439,20.3549622976186,0.675805189069824,15.0730121331585];
-
+w = [2.56216529331534,45.5981119476094,0.406363542151657,5.1506705552724];
 
 n = size(dados,1);
 
@@ -35,14 +34,14 @@ er = sqrt((dados(:,10)-dados(:,1)).^2 + (dados(:,11)-dados(:,2)).^2);
 
 %esforco de controle
 % absoluto da tensão de entrada dos motores CC
-eu = min(max(Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))',-0.65),0.65);
+% eu = min(max(Ki*dados(:,6:7)' + Kp*(dados(:,8:9) - dados(:,4:5))',-12),12);
 
-
+eu = dados(:,8:9);
 
 
 %velocidade linear
 ea = zeros(n,1);
-ea(2:end) = abs( (diff( dados(:,4) + dados(:,5) ))*R/(2*T)) ;
+ea(2:end) =  (diff( dados(:,4) + dados(:,5) ))*R/(2*T) ;
 
 %erro de trajetoria
 
@@ -85,6 +84,6 @@ fCusto = w(1)*sqrt(mean(er.^2)) + w(2)*sqrt(mean(etraj.^2)) + w(3)*sqrt(mean(abs
 %como é calculado o vetor de pesos
 % vetor de pesos é utilizando para normalizar os valores a partir dos testes
 %realizados pela trajetoria executada pelo controlador FBG
-writematrix([ 1/sqrt(mean(er.^2)), 1/sqrt(mean(etraj.^2)), 1/sqrt(mean(abs(eu).^2,"all")), 1/sqrt(mean((0.15-abs(ev)).^2)) ], "w.csv");
+% writematrix([ 1/sqrt(mean(er.^2)), 1/sqrt(mean(etraj.^2)), 1/sqrt(mean(abs(eu).^2,"all")), 1/sqrt(mean((ea).^2)) ], "w.csv");
 end
 

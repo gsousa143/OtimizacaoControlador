@@ -6,29 +6,24 @@ dados = [];
 try
     fis = attFLC(fis,x);
     dados = ddmr(fis,Xinicial,T,tempoInicial,tempoMax,setpoints,isp,A_taum,V_TRACO,B_taum,M_TRACOi, R, L, F_s, F_k, alpha_s,alpha_k,k_i,k_p);
-    
     fCusto = calculaErros(dados); %calcula o funcional custo
-
-    if On
-
-    else
+    if ~On
         clf;
         fprintf("\n x = ");
         fprintf("%2.5f, ", x);
-        plotDadosTrajetoria(dados,true);
-        %verifica se a trajetoria ultrapassou o tempo maximo proposto para
-        %a otimização offline
-        if dados(end,end)>=tempoMax
+        if norm(dados(end,1:2)-setpoints(end,:)')>0.035
             %aplica penalidade
             fCusto = fCusto + 1000;
+            fprintf("\n f(x) = %2.5f \n", fCusto);
+            plotDadosTrajetoria(dados,false);
+        else
+            plotDadosTrajetoria(dados,true);
         end
     end
 catch
-    fCusto = 1e6;
-    fprintf("\n f(x) = %2.5f", fCusto);
+    fCusto = Inf;
+    fprintf("\n f(x) = %2.5f \n", fCusto);
 end
-
-
 
 
 end

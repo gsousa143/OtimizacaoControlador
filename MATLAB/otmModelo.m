@@ -12,9 +12,13 @@ end
 
 
 if ~on
-    % clf
+    clf
     if ~isinf(fCusto)
-        % plotDadosModelo(dados,saidas,tempos)
+        try
+            plotDadosModelo(dados,saidas,tempos)
+        catch
+
+        end
     end
     fprintf('\nf(x)  %9.5g; \t x ',fCusto);
     fprintf('%9.5g,   ', x);

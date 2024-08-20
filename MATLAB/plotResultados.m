@@ -3,234 +3,288 @@ clear
 close all
 
 
-plotControladores("fbg")
+% plotSomenteTrajetorias(["FBg","OFBg","FBm"], ["zzx","dia","cir","inf"])
+
+% plotControlador(["FBm","FBg","OFBg"])
+
+% plotTrajetorias(["FBg","OFBg","FBm"],"zzx")
+
+ plotTrajetoriamodelo("fbm_zzx")
 
 
-function plotCustosOnline(metodos, trajetoria, controladores,maxTestes)
-path = "../DADOS/CONTROLADOR/";
-hold on;
+% plotSomenteTrajetoriamodelo("ofbg",["zzx","dia","cir","inf"])
 
-for metodo = metodos
-    for controlador = controladores
-        custos = [];
-        controlador = upper(controlador);
-        for i = 1:maxTestes
-            try
-                if metodo == ""
-                    custo = readmatrix(path+upper(trajetoria)+"/"+upper(controlador)+"/custos"+string(i)+".csv");
-                else
-                    custo = readmatrix(path+upper(trajetoria)+"/"+upper(controlador)+"_"+upper(metodo)+"/custos"+string(i)+".csv");
-                end
-                custos = [custos,custo(:,2)];
+function plotTrajetorias(controladores, trajetoria)
+t = tiledlayout(1,5,'TileSpacing','Compact','Padding','Compact');
+ax1 = nexttile();
+ax2 = nexttile();
+ax3 = nexttile();
+ax4 = nexttile();
+ax5 = nexttile();
 
-            catch
-
-            end
-        end
-
-        if size(custos,2) > 1
-            media = mean(custos,2);
-            dp = std(custos,1,2);
-            errorbar(media,dp,"LineWidth",1,DisplayName=controlador+metodo);
-
-        else
-            if size(custos,1) == 1
-                yline(custos,"LineWidth",1,DisplayName=controlador+metodo)
-            else
-                plot(custos,"LineWidth",1,DisplayName=controlador+metodo);
-            end
-
-        end
-
-    end %controlador = controladores
-end %metodo = metodos
-xlabel('Lap', "Interpreter", "latex");
-ylabel('Lap Functional Cost', "Interpreter", "latex");
-axis padded;
-
-legend()
-title(trajetoria)
-
-set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
-hold off;
-drawnow;
-end
+% path = "../DADOS/CONTROLADOR/"+upper(trajetoria)+"/";
+path = "../DADOS/MODELO/dados_qbot_";
+load("../SETPOINTS/"+lower(trajetoria)+".mat")
 
 
-function plotQbot(tipo)
-load("../DADOS/MODELO/dadosQbot.mat","posicao","tempo")
-load("../DADOS/MODELO/dados_estimado.mat")
-estimado = dados(:,1:2);
-load("../DADOS/MODELO/dados_otimo.mat")
-otimo = dados(:,1:2);
-hold on;
 
-if tipo=="trajetoria"
-    plot(estimado(:,1),estimado(:,2),LineWidth=2,DisplayName="Modelo Estimado")
-    plot(otimo(:,1),otimo(:,2),LineWidth=2,DisplayName="Modelo Otimizado")
-    plot(posicao(:,1),posicao(:,2),LineWidth=2,DisplayName="Qbot")
-
-    xlabel('$x_a$ [$m$]', "Interpreter", "latex");
-    ylabel('$y_a$ [$m$]', "Interpreter", "latex");
-
-
-elseif tipo=="erro"
-    erro_estimado = sqrt(sum((posicao-estimado).^2,2));
-    erro_otimo = sqrt(sum((posicao-otimo).^2,2));
-    plot(tempo,erro_estimado,LineWidth=2,DisplayName="Modelo Estimado")
-    plot(tempo,erro_otimo,LineWidth=2,DisplayName="Modelo Otimizado")
-
-    xlabel('Tempo [$s$]', "Interpreter", "latex");
-    ylabel('Erro [$m$]', "Interpreter", "latex");
-end
-
-hold off;
-axis padded;
-legend('Orientation','horizontal','location','southoutside','Box','off')
-set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
-drawnow;
-
-saveas(gcf, '../IMAGENS/MODELO/'+tipo+'.eps', 'epsc');
-end
-
-function plotCustosModelo(tipo)
-
-custos = readmatrix("../DADOS/"+upper(tipo)+"/custos.csv");
-
-plot(custos(:,1),custos(:,2),LineWidth=2)
-xlabel('Iteração');
-ylabel('Funcional Custo');
-set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
-drawnow;
-saveas(gcf, '../IMAGENS/'+upper(tipo)+'/custos.eps', 'epsc');
-
-end
-
-function plotControladores(controladores)
-path = "../CONTROLADORES/";
 for controlador = controladores
-    fis = readfis(path+controlador+".fis");
-    nE = size(fis.Inputs,2);
-    nS = size(fis.Outputs,2);
-    for i = 1:nE
-        figure
-        range = fis.Input(i).range;
-        x = linspace(range(1),range(2),1000);
-        for j = 1:size(fis.Input(i).mf,2)
-            hold on;
-            mf = fis.Input(i).mf(j);
-            y = evalmf(mf,x);
-            plot(x,y,DisplayName=mf.name,LineWidth=2)
-        end
-        xlabel(fis.Input(i).name, "Interpreter", "latex");
-        ylabel("Graus de Pertinencia", "Interpreter", "latex");
-        axis padded;
-        legend('location','southoutside','Box','off',"NumColumns",6)
-        set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
-        drawnow
-        saveas(gcf, '../IMAGENS/CONTROLADOR/'+controlador+"_"+fis.Input(i).name+'.eps', 'epsc');
-    end
-    for i = 1:nS
-        figure
-        range = fis.Output(i).range;
-        x = linspace(range(1),range(2),1000);
-        for j = 1:size(fis.Output(i).mf,2)
-            hold on;
-            mf = fis.Output(i).mf(j);
-            y = evalmf(mf,x);
-            plot(x,y,DisplayName=mf.name,LineWidth=2)
-        end
-        xlabel(fis.Output(i).name, "Interpreter", "latex");
-        ylabel("Graus de Pertinencia", "Interpreter", "latex");
-        axis padded;
-        legend('location','southoutside','Box','off',"NumColumns",6)
-        set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
-        drawnow
-        saveas(gcf, '../IMAGENS/CONTROLADOR/'+controlador+"_"+fis.Output(i).name+'.eps', 'epsc');
-    end
-end
+    % load(path+controlador+"/dados1_1.mat")
+    load(path+lower(controlador)+"_"+lower(trajetoria))
+    hold(ax1, "on");
+    plot(ax1,dados(:,1), dados(:, 2),LineWidth=1);
+    hold(ax1, "off");
+    dados = [dados, (0:0.01:t_final)'];
+    [fCusto, er, etraj, eu, ea, tempo, w] = calculaErros(dados);
+    tempo = tempo - tempo(1, end);
+    hold(ax2,"on")
+    plot(ax2, tempo, er,LineWidth=1)
+    hold(ax2,"off")
+    hold(ax3,"on")
+    plot(ax3, tempo, etraj,LineWidth=1)
+    hold(ax3,"off")
+    hold(ax4,"on")
+    plot(ax4, tempo, abs(eu(:,1))+abs(eu(:,2)),LineWidth=1)
+    hold(ax4,"off")
+    hold(ax5,"on")
+    plot(ax5, tempo, ea,LineWidth=1)
+    hold(ax5,"off")
 
 end
 
+hold(ax1, "on");
+plot(ax1,setpoints(:,1),setpoints(:,2),"x--",LineWidth=1);
+hold(ax1, "off");
+
+title(ax1, 'a)')
+xlabel(ax1, '$x_a$ [m]', 'Interpreter', 'latex');
+ylabel(ax1, '$y_a$ [m]', 'Interpreter', 'latex');
+set(ax1, 'fontsize', 12, 'FontName', 'Times New Roman');
 
 
-function plotTrajetorias(controladores, trajetoria,tipo)
-path = "../DADOS/CONTROLADOR/"+upper(trajetoria)+"/";
-if tipo=="trajetoria"
-    load("../SETPOINTS/"+lower(trajetoria)+".mat")
-    plot(setpoints(:,1),setpoints(:,2),"x--", "LineWidth", 2,DisplayName="Setpoints");
-    for controlador = controladores
-        controlador = upper(controlador)
-        load(path+controlador+"/dados1_1.mat")
-        hold on;
-        plot(dados(:,1), dados(:, 2), "LineWidth", 2,DisplayName=controlador);
-        hold off;
-        xlabel('$x_a$ [$m$]', "Interpreter", "latex");
-        ylabel('$y_a$ [$m$]', "Interpreter", "latex");
-        axis padded;
-        set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
-    end
-    legend("Location","best")
+title(ax2, 'b)')
+xlabel(ax2, 'Tempo [s]', 'Interpreter', 'latex');
+ylabel(ax2, '$E_r$ [m]', 'Interpreter', 'latex');
+set(ax2, 'fontsize', 12, 'FontName', 'Times New Roman');
 
-elseif tipo == "custo"
-    for controlador = controladores
-        controlador = upper(controlador)
-        load(path+controlador+"/dados1_1.mat")
+title(ax3, 'c)')
+xlabel(ax3, 'Tempo [s]', 'Interpreter', 'latex');
+ylabel(ax3, '$E_{traj}$ [m]', 'Interpreter', 'latex');
+set(ax3, 'fontsize', 12, 'FontName', 'Times New Roman');
 
-        [~, er, etraj, eu, ev, tempo] = calculaErros(dados);
-        eu = abs(eu);
-        ev = abs(ev);
-        tempo = tempo - tempo(1, end);
+title(ax4, 'd)')
+xlabel(ax4, 'Tempo [s]', 'Interpreter', 'latex');
+ylabel(ax4, '$||\bar{\eta}||$ [m/s]', 'Interpreter', 'latex');
+set(ax4, 'fontsize', 12, 'FontName', 'Times New Roman');
 
-        subplot(2, 2, 1);
-        hold on;
-        h1 = plot(tempo, er, "LineWidth", 2);
-        cor = get(h1, 'Color');
-        hold off;
+title(ax5, 'e)')
+xlabel(ax5, 'Tempo [s]', 'Interpreter', 'latex');
+ylabel(ax5, '$a$ [m/s$^2$]', 'Interpreter', 'latex');
+set(ax5, 'fontsize', 12, 'FontName', 'Times New Roman');
 
-        ylabel('$E_r$ [$m$]', "Interpreter", "latex");
-        axis padded;
-        set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
+lgd = legend(ax1,[controladores, "Trajetória de Referência"], box="off", Orientation="horizontal",FontSize=12,FontName="Times New Roman");
+lgd.Layout.Tile = 'south';
 
-        subplot(2, 2, 2);
-        hold on;
-        plot(tempo, etraj, 'Color', cor, "LineWidth", 2);
-        hold off;
+% legend("Location","best")
+% saveas(gcf, '../IMAGENS/CONTROLADOR/'+tipo+'_'+trajetoria+'.eps', 'epsc');
+end
 
-        ylabel('$E_{traj}$  [$m$]', "Interpreter", "latex");
-        axis padded;
-        set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
+function plotTrajetoriamodelo(trajetoria)
+t = tiledlayout(1,4,'TileSpacing','Compact','Padding','Compact');
+
+% First Tile
+ax1 = nexttile();
+% Second Tile
+ax2 = nexttile();
+
+ax3 = nexttile();
+% Fourth Tile
+ax4 = nexttile();
 
 
-        ylabel('$\|Y_{PI}\|$ [$V$]', "Interpreter", "latex");
-        axis padded;
-        set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
-        subplot(2, 2, 3);
-        hold on;
-        plot(tempo, eu(1,:)+eu(2,:), "LineWidth", 2);
-
-        hold off;
-        xlabel('Tempo [$s$]', "Interpreter", "latex");
-        ylabel('$Y_{PI l}$ [$V$]', "Interpreter", "latex");
-        axis padded;
-        set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
+load("../DADOS/MODELO/dados_qbot_" + trajetoria)
+tempo = 0:0.01:(size(dados,1)-1)*0.01;
+qbot = dados;
 
 
-        subplot(2, 2, 4);
-        hold on;
-        plot(tempo, ev, 'Color', cor, "LineWidth", 2);
-        hold off;
 
-        xlabel('Tempo [$s$]', "Interpreter", "latex");
-        ylabel('$\|v_F\|$ [$m/s$]', "Interpreter", "latex");
-        axis padded;
-        set(gca(), "fontsize", 14, 'FontName', 'Times New Roman');
+for tipo = ["inicial", "otimo"]
+    % Update First Tile
+    hold(ax1, 'on');
+    load("../DADOS/MODELO/dados_modelo_" + tipo + "_" + trajetoria);
+    grafico = plot(ax1, dados(:,1), dados(:,2),LineWidth=1);
+    cor = get(grafico, 'Color');
+    er = sqrt((qbot(:,1) - dados(:,1)).^2 + (qbot(:,2) - dados(:,2)).^2);
+    hold(ax1, 'off');
 
-        drawnow;
-    end
-    lgd = legend(upper(controladores),"Orientation","horizontal","Box","off")
+
+    hold(ax2, 'on');
+    plot(ax2, tempo, er, 'DisplayName', upper(tipo), 'Color', cor,LineWidth=1);
+    hold(ax2, 'off');
+
+    % Second Tile update
+    hold(ax3, 'on');
+    plot(ax3, tempo, dados(:,4),LineWidth=1);
+    hold(ax3, 'off');
+
+    % Third Tile update
+    hold(ax4, 'on');
+    plot(ax4, tempo, dados(:,5),LineWidth=1);
+    hold(ax4, 'off');
+end
+
+
+hold(ax1, 'on');
+plot(ax1, qbot(:,1), qbot(:,2),"--",LineWidth=1)
+hold(ax1, 'off');
+
+
+hold(ax3, 'on');
+plot(ax3, tempo, qbot(:,4),"--");
+hold(ax3, 'off');
+
+
+hold(ax4, 'on');
+plot(ax4, tempo, qbot(:,5),"--");
+hold(ax4, 'off');
+
+% Customize Titles and Labels
+title(ax1, 'a)')
+xlabel(ax1, '$x_a$ [m]', 'Interpreter', 'latex');
+ylabel(ax1, '$y_a$ [m]', 'Interpreter', 'latex');
+set(ax1, 'fontsize', 12, 'FontName', 'Times New Roman');
+
+
+title(ax2, 'b)')
+xlabel(ax2, 'Tempo [s]', 'Interpreter', 'latex');
+ylabel(ax2, 'Erro [m]', 'Interpreter', 'latex');
+set(ax2, 'fontsize', 12, 'FontName', 'Times New Roman');
+
+title(ax3, 'c)')
+xlabel(ax3, 'Tempo [s]', 'Interpreter', 'latex');
+ylabel(ax3, '$\varphi_r$ [m/s]', 'Interpreter', 'latex');
+set(ax3, 'fontsize', 12, 'FontName', 'Times New Roman');
+
+title(ax4, 'd)')
+xlabel(ax4, 'Tempo [s]', 'Interpreter', 'latex');
+ylabel(ax4, '$\varphi_l$ [m/s]', 'Interpreter', 'latex');
+set(ax4, 'fontsize', 12, 'FontName', 'Times New Roman');
+
+lgd = legend(["Inicial","Ótimo","Qbot2"], box="off", Orientation="horizontal",FontSize=12,FontName="Times New Roman");
+lgd.Layout.Tile = 'south';
+drawnow;
+end
+
+
+function plotControlador(controladores)
+
+hold on;
+n = size(controladores,2);
+i=1;
+for controlador = controladores
+    fis = readfis("../CONTROLADORES/"+controlador+".fis")
+    subplot(n,1,i)
+    plotmf(fis,"input",1,1000);
+    i = i+1;
+end
+end
+
+
+
+
+function plotSomenteTrajetorias(controladores, trajetorias)
+t = tiledlayout(2,4,'TileSpacing','Compact','Padding','Compact');
+
+for trajetoria = trajetorias
+% path = "../DADOS/CONTROLADOR/"+upper(trajetoria)+"/";
+path = "../DADOS/MODELO/dados_qbot_";
+load("../SETPOINTS/"+lower(trajetoria)+".mat")
+nexttile()
+hold on;
+for controlador = controladores
+    % load(path+controlador+"/dados1_1.mat")
+    load(path+lower(controlador)+"_"+lower(trajetoria))
+    % hold(ax1, "on");
+    plot(dados(:,1), dados(:, 2),LineWidth=1);
+    % hold(ax1, "off");
+    dados = [dados, (0:0.01:t_final)'];
+    trajetoria+controlador
+    plotDadosTrajetoria(dados,true);
 
 end
 
-saveas(gcf, '../IMAGENS/CONTROLADOR/'+tipo+'_'+trajetoria+'.eps', 'epsc');
+plot(setpoints(:,1),setpoints(:,2),"x--",LineWidth=1);
+title(upper(trajetoria))
+xlabel("$x_a$ [m]", Interpreter="latex")
+ylabel("$y_a$ [m]", Interpreter="latex")
+set(gca, 'fontsize', 12, 'FontName', 'Times New Roman')
+axis padded
+hold off;
+end
+
+lgd = legend([controladores, "Trajetória de Referência"], box="off", Orientation="horizontal",FontSize=12,FontName="Times New Roman");
+lgd.Layout.Tile = 'south';
+for trajetoria = trajetorias
+% path = "../DADOS/CONTROLADOR/"+upper(trajetoria)+"/";
+path = "../DADOS/MODELO/dados_qbot_";
+load("../SETPOINTS/"+lower(trajetoria)+".mat")
+nexttile()
+hold on;
+for controlador = controladores
+    % load(path+controlador+"/dados1_1.mat")
+    load(path+lower(controlador)+"_"+lower(trajetoria))
+    % hold(ax1, "on");
+    plot((0:0.01:t_final)',abs(dados(:,8))+abs(dados(:,9)),LineWidth=1)
+    % hold(ax1, "off");
+
+end
+% title(upper(trajetoria))
+xlabel("Tempo (s)", Interpreter="latex")
+ylabel("$||\bar{\eta}||$ [m/s]", Interpreter="latex")
+set(gca, 'fontsize', 12, 'FontName', 'Times New Roman')
+axis padded
+hold off;
+end
+end
+
+
+    
+
+
+function plotSomenteTrajetoriamodelo(controlador,trajetorias)
+t = tiledlayout(1,4,'TileSpacing','Compact','Padding','Compact');
+
+
+for trajetoria = trajetorias
+nexttile()
+
+
+hold on
+load("../DADOS/MODELO/dados_qbot_" + controlador + "_" + trajetoria)
+tempo = 0:0.01:(size(dados,1)-1)*0.01;
+qbot = dados;
+plot(qbot(:,1), qbot(:,2),LineWidth=1)
+hold off
+
+
+for tipo = ["inicial", "otimo"]
+    % Update First Tile
+    hold on
+    load("../DADOS/MODELO/dados_modelo_" + tipo + "_" + controlador + "_" + trajetoria);
+    plot(dados(:,1), dados(:,2),LineWidth=1);
+    % cor = get(grafico, 'Color');
+    % er = sqrt((qbot(:,1) - dados(:,1)).^2 + (qbot(:,2) - dados(:,2)).^2);
+    hold off
+
+end
+
+% Customize Titles and Labels
+title(upper(trajetoria),'fontsize', 12, 'FontName', 'Times New Roman')
+xlabel('$x_a$ [m]', 'Interpreter', 'latex','fontsize', 12, 'FontName', 'Times New Roman');
+ylabel('$y_a$ [m]', 'Interpreter', 'latex','fontsize', 12, 'FontName', 'Times New Roman');
+
+end
+lgd = legend(["Qbot2","Inicial","Ótimo"], box="off", Orientation="horizontal",FontSize=12,FontName="Times New Roman");
+lgd.Layout.Tile = 'south';
+drawnow;
 end
