@@ -1,8 +1,8 @@
-classdef ddmr_model < matlab.System %#codegen
+classdef DDMR < matlab.System %#codegen
     % untitled Add summary here
     %
-    % This template includes the minimum set of functions required
-    % to define a System object.
+    % MATLAB Object System Modelado para atualizar o estado de um DDMR
+    % utilizando o modelo unificado de acordo com as constatens setadas.
 
     % Public, tunable properties
     properties
@@ -19,24 +19,17 @@ classdef ddmr_model < matlab.System %#codegen
             obj.state = zeros(7,1);
             % % Perform one-time calculations, such as computing constants
         end
+        
 
-
-        function [x_a, y_a, theta, phi_d, phi_e] = stepImpl(obj,u_d,u_e)
-            u = [
-                u_d;
-                u_e];
+        function state = stepImpl(obj,u)
 
             % Recebe um sinal de controle e atualiza o estado do ddmr
             [~, states] = ode23(@(t,X) ...
                 unifiedModel(t, X, u, obj.R, obj.L, obj.alpha_s, obj.alpha_k, obj.f_s, obj.f_k, obj.V, obj.A_tau, obj.B_tau, obj.M_i, obj.k_i, obj.k_p), ...
                 [0,obj.T], obj.state);
 
-            obj.state = states(end,:)';
-            x_a = obj.state(1);
-            y_a = obj.state(2);
-            theta = obj.state(3);
-            phi_d = obj.state(4);
-            phi_e = obj.state(5);
+            state = states(end,:);
+            obj.state = state';
         end
 
         function resetImpl(obj)
@@ -44,42 +37,32 @@ classdef ddmr_model < matlab.System %#codegen
         end
 
 
-        function [o1, o2, o3, o4, o5] = getOutputSizeImpl(obj)
+        function [o1] = getOutputSizeImpl(obj)
             % Return size for output port to be same as input port
-            inSize = [1 1];
-            o1 = inSize;
-            o2 = inSize;
-            o3 = inSize;
-            o4 = inSize;
-            o5 = inSize;
+            o1 = [1 7];
+
         end
 
-        function [o1, o2, o3, o4, o5] = getOutputDataTypeImpl(obj)
+        function [o1] = getOutputDataTypeImpl(obj)
             % Return data type for output port to be same as input port
-            out = "double";
-            o1 = out;
-            o2 = out;
-            o3 = out;
-            o4 = out;
-            o5 = out;
+            o1 = "double";
+ 
         end
 
-        function [o1, o2, o3, o4, o5] = isOutputComplexImpl(~)
+        function [o1] = isOutputComplexImpl(~)
             % Return output port complexity to be real
             o1 = false;
-            o2 = false;
-            o3 = false;
-            o4 = false;
-            o5 = false;
+
         end
 
-        function [o1, o2, o3, o4, o5] = isOutputFixedSizeImpl(~)
+        function [o1] = isOutputFixedSizeImpl(~)
             % Return true for each output port with fixed size
             o1 = true;
-            o2 = true;
-            o3 = true;
-            o4 = true;
-            o5 = true;
+
+        end
+
+        function sts = getSampleTimeImpl(obj)
+            sts = createSampleTime(obj,'Type','Discrete','SampleTime',obj.T);
         end
     end
 
@@ -92,10 +75,6 @@ classdef ddmr_model < matlab.System %#codegen
             obj.state = state;
         end
 
-
-        function [fCusto,er] = errors(obj,qbotData)
-
-        end
 
         function setConstants(obj, constants)
             obj.R = constants(1); % Raio das rodas do robô (m)
@@ -116,8 +95,8 @@ classdef ddmr_model < matlab.System %#codegen
             obj.alpha_s = constants(13); % Constante de saturação do atrito estático
             obj.alpha_k = constants(14); % constants de saturação do atrito cinético
 
-            obj.k_i = constants(15); % Ganho Ki
-            obj.k_p = constants(16); % Ganho Kp
+            obj.k_i = 1; % Ganho Ki
+            obj.k_p = 2.5; % Ganho Kp
 
 
             g = 9.81; %Aceleracao da gravidade

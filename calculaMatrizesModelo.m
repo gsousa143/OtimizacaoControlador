@@ -17,8 +17,8 @@ f_k = constantes(12); % Coeficiente de atrito cinético
 alpha_s = constantes(13); % Constante de saturação do atrito estático 
 alpha_k = constantes(14); % Constantes de saturação do atrito cinético
 
-k_i = constantes(15); % Ganho Ki
-k_p = constantes(16); % Ganho Kp
+k_i = 1; % Ganho Ki
+k_p = 2.5; % Ganho Kp
 
 
 g = 9.81; %Aceleracao da gravidade
